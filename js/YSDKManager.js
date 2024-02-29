@@ -2,6 +2,7 @@ var ysdk = null;
 
 function InitYaSDK(){
 	console.log('VK SDK begin initialized');
+	const queryString = window.location.search.slice(1);
 	const paramsArray = queryString.split('&');
 	window.paramsObject = {};
 	paramsArray.forEach(param => {
