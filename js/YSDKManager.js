@@ -1,28 +1,37 @@
 var ysdk = null;
 
 function InitYaSDK(){
-	console.log('Yandex SDK begin initialized');
-	window.lang = 'ru';
-  if(window['YaGames'] != null)	YaGames
-    .init()
-    .then(ysdk => {
-        console.log('Yandex SDK initialized');
-        window.ysdk = ysdk;
-				window.lang = ysdk.environment.i18n.lang;
-				window.isMobile = !ysdk.deviceInfo.isDesktop() && ysdk.deviceInfo._type != null;
-				if(isMobile) $('#pcmovement').hide();
-    });
+	console.log('VK SDK begin initialized');
+	const paramsArray = queryString.split('&');
+	window.paramsObject = {};
+	paramsArray.forEach(param => {
+			const [key, value] = param.split('=');
+			paramsObject[key.toLowerCase()] = value.toLowerCase();
+	});
+
+	if(localStorage['savelang'] != null) {
+			window.lang = localStorage['savelang'];
+	}
+	else window.lang = paramsObject.lang == 'ru_ru' ? 'ru' : 'en';
+
+		iframeApi({
+				appid: 33264,
+				getLoginStatusCallback: function(status) {},
+				userInfoCallback: function(info) {console.log(info);},
+				adsCallback: adsCallback
+		}).then(function(api){
+			window.ysdk = api;
+			console.log('VK SDK initialized');
+			window.isMobile = false;
+		}, function(code){
+			console.log("VK SDK Init Error: " + code);
+		});
 }
 
 InitYaSDK();
 
 function updscore(){
-	if(window['ysdk']!=null)
-	  ysdk.getLeaderboards()
-	  .then(lb => {
-		lb.setLeaderboardScore('lead', parseInt(score));
-	  });
-	  else console.log("ysdk == null");
+
 }
 
 document.addEventListener("visibilitychange", function() {
@@ -44,20 +53,35 @@ function setSize() {
     unityContainer.style.height = window.innerHeight + "px";
   }
 
-function yabanner(end){
 
-	if(window['ysdk']==null){
-		window['MusEnable'] = true;
-				end();
-				playMusic();
-		return;
-	}
+function adsCallback(data){
+  console.log(data);
+  if(adsCallback.onClose != null) adsCallback.onClose();
+  if(adsCallback.onRewarded != null) adsCallback.onRewarded();
+}
+
+var adv = {
+  showFullscreenAdv: function(info){
+    let cb = info.callbacks;
+    adsCallback.onClose = cb.onClose;
+    adsCallback.onRewarded = cb.onRewarded;
+    ysdk.showAds({interstitial: true});
+  },
+  showRewardedVideo: function(info){
+    let cb = info.callbacks;
+    adsCallback.onClose = cb.onClose;
+    adsCallback.onRewarded = cb.onRewarded;
+    ysdk.showAds({interstitial: false});
+  }
+}
+
+function yabanner(end){
 
 	window['MusEnable'] = false;
 	pauseMusic();
   advInScr = true;
   unityInstance.SendMessage('Level', 'PreBanner');
-  ysdk.adv.showFullscreenAdv({callbacks: {onClose: function(){
+  adv.showFullscreenAdv({callbacks: {onClose: function(){
 		window['MusEnable'] = true;
 	  unityInstance.SendMessage('Level', 'PostBanner');
 	  end();
@@ -71,17 +95,10 @@ var advInScr = false;
 function yarbanner(reward,end){
 	window['MusEnable'] = false;
 	pauseMusic();
-	if(window['ysdk']==null){
-		window['MusEnable'] = true;
-		end();
-		playMusic();
-		return;
-	}
-
   advInScr = true;
   unityInstance.SendMessage('Level', 'PreBanner');
 
-  ysdk.adv.showRewardedVideo({callbacks: {
+  adv.showRewardedVideo({callbacks: {
 	  onRewarded:reward,
 	  onClose: function(){
 		unityInstance.SendMessage('Level', 'PostBanner');

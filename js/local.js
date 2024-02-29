@@ -1,4 +1,4 @@
-var txt = {
+var __localdata__ = {
   "ru":{
     win:"Миссия выполнена!",
     lose: "Миссия провалена!",
@@ -24,5 +24,5 @@ var txt = {
 }
 
 function TXT(id){
-  return txt[lang][id];
+  return __localdata__[lang][id];
 }

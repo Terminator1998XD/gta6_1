@@ -42,10 +42,7 @@ function getMainMenu(){
         }
       });
     }),
-    getMovementHelp(),
-    moregames(function(){//exit func
-      showMainMenu();
-    })
+    getMovementHelp()
   ];
 }
 
