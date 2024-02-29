@@ -42,7 +42,8 @@ function getMainMenu(){
         }
       });
     }),
-    getMovementHelp()
+    getMovementHelp(),
+    getLocalizationButtons()
   ];
 }
 

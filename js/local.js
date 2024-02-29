@@ -26,3 +26,16 @@ var __localdata__ = {
 function TXT(id){
   return __localdata__[lang][id];
 }
+
+function getLocalizationButtons(){
+  return $('<div>').css({'position':'absolute', 'right': '0', 'top': '0'}).append([
+    $('<p>').append($('<button>').text("Русский").click(function(){
+      window.lang = 'ru';
+      showMainMenu();
+    })),
+    $('<p>').append($('<button>').text("English").click(function(){
+      window.lang = 'en';
+      showMainMenu();
+    }))
+  ]);
+}
