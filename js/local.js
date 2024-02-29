@@ -31,10 +31,12 @@ function getLocalizationButtons(){
   return $('<div>').css({'position':'absolute', 'right': '0', 'top': '0'}).append([
     $('<p>').append($('<button>').text("Русский").click(function(){
       window.lang = 'ru';
+      localStorage['savelang'] = window.lang;
       showMainMenu();
     })),
     $('<p>').append($('<button>').text("English").click(function(){
       window.lang = 'en';
+      localStorage['savelang'] = window.lang;
       showMainMenu();
     }))
   ]);
